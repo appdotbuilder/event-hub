@@ -1,3 +1,6 @@
+import { db } from '../db';
+import { eventProgramsTable, eventsTable } from '../db/schema';
+import { eq } from 'drizzle-orm';
 import { 
     type CreateEventProgramInput, 
     type UpdateEventProgramInput, 
@@ -6,17 +9,33 @@ import {
 } from '../schema';
 
 export async function createEventProgram(input: CreateEventProgramInput): Promise<EventProgram> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is creating a new program entry for an event.
-    // Should validate event ownership and create program entry with correct order.
-    return Promise.resolve({
-        id: 0,
-        event_id: input.event_id,
-        topic: input.topic,
-        time: input.time,
-        order_index: input.order_index,
-        created_at: new Date()
-    });
+    try {
+        // First verify that the event exists
+        const eventExists = await db.select()
+            .from(eventsTable)
+            .where(eq(eventsTable.id, input.event_id))
+            .execute();
+        
+        if (eventExists.length === 0) {
+            throw new Error(`Event with id ${input.event_id} not found`);
+        }
+
+        // Insert the new program entry
+        const result = await db.insert(eventProgramsTable)
+            .values({
+                event_id: input.event_id,
+                topic: input.topic,
+                time: input.time,
+                order_index: input.order_index
+            })
+            .returning()
+            .execute();
+
+        return result[0];
+    } catch (error) {
+        console.error('Event program creation failed:', error);
+        throw error;
+    }
 }
 
 export async function getProgramsByEvent(eventId: number): Promise<EventProgram[]> {
