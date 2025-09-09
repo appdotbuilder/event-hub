@@ -8,6 +8,7 @@ import { Heart, LogOut, Shield, UserIcon, Camera } from 'lucide-react';
 import { trpc } from '@/utils/trpc';
 
 // Import components
+import { LandingPage } from '@/components/LandingPage';
 import { LoginForm } from '@/components/LoginForm';
 import { EventOrganizerDashboard } from '@/components/EventOrganizerDashboard';
 import { AdministratorDashboard } from '@/components/AdministratorDashboard';
@@ -19,7 +20,7 @@ import type { User, Event } from '../../server/src/schema';
 function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [guestEvent, setGuestEvent] = useState<Event | null>(null);
-  const [activeView, setActiveView] = useState<'login' | 'organizer' | 'admin' | 'guest'>('login');
+  const [activeView, setActiveView] = useState<'landing' | 'login' | 'organizer' | 'admin' | 'guest'>('landing');
 
   const loadGuestEvent = useCallback(async (token: string) => {
     try {
@@ -48,10 +49,19 @@ function App() {
   const handleLogout = useCallback(() => {
     setCurrentUser(null);
     setGuestEvent(null);
-    setActiveView('login');
+    setActiveView('landing');
     // Clear URL parameters
     window.history.replaceState({}, document.title, window.location.pathname);
   }, []);
+
+  const handleGetStarted = useCallback(() => {
+    setActiveView('login');
+  }, []);
+
+  // Landing page (no user logged in and no event token)
+  if (activeView === 'landing') {
+    return <LandingPage onGetStarted={handleGetStarted} />;
+  }
 
   // Guest view (no authentication required)
   if (activeView === 'guest' && guestEvent) {
@@ -117,6 +127,15 @@ function App() {
       <main className="container mx-auto px-4 py-8">
         {activeView === 'login' && (
           <div className="max-w-md mx-auto">
+            <div className="mb-4">
+              <Button 
+                variant="ghost" 
+                onClick={() => setActiveView('landing')}
+                className="text-gray-600 hover:text-gray-800"
+              >
+                ← Tilbage til forside
+              </Button>
+            </div>
             <Card className="shadow-lg">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl flex items-center justify-center space-x-2">
