@@ -9,9 +9,10 @@ import type { User, LoginInput } from '../../../server/src/schema';
 
 interface LoginFormProps {
   onLogin: (user: User) => void;
+  onSignUpClick?: () => void;
 }
 
-export function LoginForm({ onLogin }: LoginFormProps) {
+export function LoginForm({ onLogin, onSignUpClick }: LoginFormProps) {
   const [formData, setFormData] = useState<LoginInput>({
     email: '',
     password: ''
@@ -98,6 +99,21 @@ export function LoginForm({ onLogin }: LoginFormProps) {
       >
         {isLoading ? 'Logger ind...' : 'Log ind'}
       </Button>
+
+      {onSignUpClick && (
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            Har du ikke en konto endnu?{' '}
+            <Button 
+              variant="link" 
+              className="p-0 h-auto text-pink-600 hover:text-pink-700"
+              onClick={onSignUpClick}
+            >
+              Opret en konto
+            </Button>
+          </p>
+        </div>
+      )}
     </form>
   );
 }

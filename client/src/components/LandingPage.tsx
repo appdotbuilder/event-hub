@@ -17,9 +17,10 @@ import {
 
 interface LandingPageProps {
   onGetStarted: () => void;
+  onSignUp?: () => void;
 }
 
-export function LandingPage({ onGetStarted }: LandingPageProps) {
+export function LandingPage({ onGetStarted, onSignUp }: LandingPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
       {/* Header */}
@@ -30,9 +31,16 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
               <Heart className="h-8 w-8 text-pink-500" />
               <h1 className="text-2xl font-bold text-gray-900">EventFlow</h1>
             </div>
-            <Button onClick={onGetStarted} variant="outline">
-              Log ind
-            </Button>
+            <div className="flex items-center space-x-2">
+              {onSignUp && (
+                <Button onClick={onSignUp} variant="outline">
+                  Opret Ny Konto
+                </Button>
+              )}
+              <Button onClick={onGetStarted} variant="outline">
+                Log ind
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -58,13 +66,23 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {onSignUp && (
+              <Button 
+                onClick={onSignUp}
+                size="lg" 
+                className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-3"
+              >
+                <Heart className="h-5 w-5 mr-2" />
+                Opret Ny Konto
+              </Button>
+            )}
             <Button 
               onClick={onGetStarted} 
               size="lg" 
-              className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-3"
+              className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-8 py-3"
             >
               <Heart className="h-5 w-5 mr-2" />
-              Opret Gratis Event
+              {onSignUp ? 'Log Ind' : 'Opret Gratis Event'}
             </Button>
             <Button variant="outline" size="lg" className="px-8 py-3">
               Se demo
@@ -391,14 +409,26 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           <p className="text-xl text-pink-100 mb-8 max-w-2xl mx-auto">
             Opret jeres første event nu og oplev hvor nemt det er at få alle gæsternes minder samlet ét sted.
           </p>
-          <Button 
-            onClick={onGetStarted}
-            size="lg" 
-            className="bg-white text-pink-600 hover:bg-gray-100 px-8 py-3 text-lg font-semibold"
-          >
-            <Heart className="h-5 w-5 mr-2" />
-            Start Gratis I Dag
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {onSignUp && (
+              <Button 
+                onClick={onSignUp}
+                size="lg" 
+                className="bg-white text-pink-600 hover:bg-gray-100 px-8 py-3 text-lg font-semibold"
+              >
+                <Heart className="h-5 w-5 mr-2" />
+                Opret Ny Konto
+              </Button>
+            )}
+            <Button 
+              onClick={onGetStarted}
+              size="lg" 
+              className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-3 text-lg font-semibold border-2 border-white"
+            >
+              <Heart className="h-5 w-5 mr-2" />
+              {onSignUp ? 'Log Ind' : 'Start Gratis I Dag'}
+            </Button>
+          </div>
         </div>
       </section>
 

@@ -10,6 +10,7 @@ import { trpc } from '@/utils/trpc';
 // Import components
 import { LandingPage } from '@/components/LandingPage';
 import { LoginForm } from '@/components/LoginForm';
+import { SignUpForm } from '@/components/SignUpForm';
 import { EventOrganizerDashboard } from '@/components/EventOrganizerDashboard';
 import { AdministratorDashboard } from '@/components/AdministratorDashboard';
 import { GuestEventView } from '@/components/GuestEventView';
@@ -20,7 +21,7 @@ import type { User, Event } from '../../server/src/schema';
 function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [guestEvent, setGuestEvent] = useState<Event | null>(null);
-  const [activeView, setActiveView] = useState<'landing' | 'login' | 'organizer' | 'admin' | 'guest'>('landing');
+  const [activeView, setActiveView] = useState<'landing' | 'login' | 'signup' | 'organizer' | 'admin' | 'guest'>('landing');
 
   const loadGuestEvent = useCallback(async (token: string) => {
     try {
@@ -58,9 +59,14 @@ function App() {
     setActiveView('login');
   }, []);
 
+  const handleSignUpSuccess = useCallback(() => {
+    // After successful signup, redirect to login page
+    setActiveView('login');
+  }, []);
+
   // Landing page (no user logged in and no event token)
   if (activeView === 'landing') {
-    return <LandingPage onGetStarted={handleGetStarted} />;
+    return <LandingPage onGetStarted={handleGetStarted} onSignUp={() => setActiveView('signup')} />;
   }
 
   // Guest view (no authentication required)
@@ -144,7 +150,7 @@ function App() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <LoginForm onLogin={handleLogin} />
+                <LoginForm onLogin={handleLogin} onSignUpClick={() => setActiveView('signup')} />
               </CardContent>
             </Card>
             
@@ -163,6 +169,43 @@ function App() {
                 <p className="text-sm text-gray-500">
                   Hvis linket ikke virkede automatisk, kan du kopiere det ind i din browser.
                 </p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeView === 'signup' && (
+          <div className="max-w-md mx-auto">
+            <div className="mb-4">
+              <Button 
+                variant="ghost" 
+                onClick={() => setActiveView('landing')}
+                className="text-gray-600 hover:text-gray-800"
+              >
+                ← Tilbage til forside
+              </Button>
+            </div>
+            <Card className="shadow-lg">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl flex items-center justify-center space-x-2">
+                  <Heart className="h-6 w-6 text-pink-500" />
+                  <span>Opret Konto</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <SignUpForm onSuccess={handleSignUpSuccess} />
+                <div className="mt-4 text-center">
+                  <p className="text-sm text-gray-600">
+                    Har du allerede en konto?{' '}
+                    <Button 
+                      variant="link" 
+                      className="p-0 h-auto text-pink-600 hover:text-pink-700"
+                      onClick={() => setActiveView('login')}
+                    >
+                      Log ind her
+                    </Button>
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
